@@ -32,14 +32,25 @@ class Text:
 #The Game itself
 class Tetris:
     def __init__(self, app) -> None:
+        #Gives us a pointer to the app a layer above
         self.app = app
+        #creates a spritegroup to reference for rendering and updating purposes
         self.sprite_group = pg.sprite.Group()
+        #initializes array that represents the gamespace
         self.field_array = self.get_field_array()
+        #initializes a list to pull shapes from
         self.grab_bag = list(TETROMINOES.keys())
+        #generates the initial tetromino
         self.tetromino = Tetromino(self)
+        #generates the next tetromino
         self.next_tetromino = Tetromino(self, current= False)
+        
+        #initializing variables for later
         self.speed_up = False
         self.level = 0
+        self.score = 0
+        self.full_lines = 0
+        self.levelcounter = 0
         # Sounds
         self.theme = mixer.Sound(THEME)
         self.line_clear = mixer.Sound(LINE_CLEAR)
@@ -50,15 +61,11 @@ class Tetris:
         self.sfx = mixer.Channel(2)
         # Volume Adjust
         self.theme.set_volume(0.5)
-
-        
-        self.score = 0
-        self.full_lines = 0
-        self.levelcounter = 0
-        self.sfx_key = {0 : None, 1 : self.line_clear}
     
     def get_score(self):
+        #adds score to score variable
         self.score += POINT_PER_LINE[self.full_lines]
+        #plays appropriate sound effect if there is any to play
         if self.leveled_up:
             self.sfx.play(self.level_up)
         elif self.full_lines == 4:
@@ -66,9 +73,12 @@ class Tetris:
         elif self.full_lines > 0:
             self.sfx.play(self.line_clear)
         self.full_lines = 0
+        #resets the full line counter for this game cycle
         
     def check_full_lines(self):
+        #initialized for later
         self.leveled_up = False
+        #row variable to be iterated from later
         row = H - 1
         for y in range(H - 1, -1, -1):
             for x in range(W):
