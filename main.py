@@ -19,17 +19,19 @@ class App:
         #Creates the text for the hud
         self.text = Text(self)
         #Starts the iconic tune
-        self.tetris.song.play(self.tetris.theme, -1)  
     #allows controlling time based events such as block falling and player movement
     def set_timer(self):
         #Sets ids and initializes timer related variables
         self.user_event = pg.USEREVENT + 0
         self.fast_user_event = pg.USEREVENT + 1
+        self.input_event = pg.USEREVENT + 2
         self.anim_trigger = False
         self.fast_anim_trigger = False
+        self.input_trigger = False
         #Set time interval for game events, interval scales with level
         pg.time.set_timer(self.user_event, DIFFICULTY_MAP[self.tetris.level])
         pg.time.set_timer(self.fast_user_event, FAST_TIME)
+        pg.time.set_timer(self.input_event, PLAYER_TIME)
     #update the clock at our regular framerate
     def update(self):
         self.tetris.update()
@@ -44,6 +46,7 @@ class App:
     def check_events(self):
         self.anim_trigger = False
         self.fast_anim_trigger = False
+        self.input_trigger = False
         for event in pg.event.get():
             #if the quit button is hit, quit
             if event.type == QUIT:
@@ -51,12 +54,14 @@ class App:
                 sys.exit()
             #if a key is down we run the control function in the game
             if event.type == KEYDOWN:
-                self.tetris.control(pressed_key=event.key)
+                self.tetris.explicit_control(pressed_key=event.key)
             # if we're on cycle for the game to push down, we push down at the intended rate
             if event.type == self.user_event:
                 self.anim_trigger = True
             if event.type == self.fast_user_event:
                 self.fast_anim_trigger = True
+            if event.type == self.input_event:
+                self.input_trigger = True
     #main loop
     def run(self):
         while True:
