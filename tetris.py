@@ -144,6 +144,10 @@ class Tetris:
     
     #initiates hard drop or rotation if it's called
     def explicit_control(self, pressed_key):
+        if pressed_key == K_LEFT:
+            self.tetromino.move(direction= 'left')
+        if pressed_key == K_RIGHT:
+            self.tetromino.move(direction= 'right')
         if pressed_key == K_UP:
             self.tetromino.rotate()
         if pressed_key == K_SPACE:
@@ -151,11 +155,11 @@ class Tetris:
     
     #passive movement
     def passive_control(self, pressed_keys):
-        if pressed_keys[K_DOWN]:
+        if pressed_keys[K_s]:
             self.tetromino.move(direction= 'down')
-        if pressed_keys[K_LEFT]:
+        if pressed_keys[K_a]:
             self.tetromino.move(direction= 'left')
-        if pressed_keys[K_RIGHT]:
+        if pressed_keys[K_d]:
             self.tetromino.move(direction= 'right')
         
     #generate grid at the start of the game
@@ -167,14 +171,17 @@ class Tetris:
     def update(self):
         #check if either of the passive triggers are active
         trigger = [self.app.anim_trigger, self.app.fast_anim_trigger][self.speed_up]
+        moved = False
         if trigger:
             self.check_full_lines()
             self.tetromino.update()
-            self.check_tetromino_landing()
-            self.get_score()
+            moved = True
         #if the trigger for the input window is on, let that happen
         if self.app.input_trigger:
+            self.check_full_lines()
             self.passive_control(pg.key.get_pressed())
+            moved = True
+        if moved:
             self.check_tetromino_landing()
             self.get_score()
         self.sprite_group.update()
