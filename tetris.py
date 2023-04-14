@@ -148,15 +148,18 @@ class Tetris:
             self.tetromino.move(direction= 'left')
         if pressed_key == K_RIGHT:
             self.tetromino.move(direction= 'right')
-        if pressed_key == K_UP:
+        if pressed_key == K_UP or pressed_key == K_x:
             self.tetromino.rotate()
+        if pressed_key == K_LCTRL or pressed_key == K_z:
+            self.tetromino.rotate(counter_clockwise= True)
         if pressed_key == K_SPACE:
             self.speed_up = True
     
     #passive movement
     def passive_control(self, pressed_keys):
-        if pressed_keys[K_s]:
+        if any({pressed_keys[K_s], pressed_keys[K_DOWN]}):
             self.tetromino.move(direction= 'down')
+            self.moved_down = True
         if pressed_keys[K_a]:
             self.tetromino.move(direction= 'left')
         if pressed_keys[K_d]:
@@ -171,17 +174,16 @@ class Tetris:
     def update(self):
         #check if either of the passive triggers are active
         trigger = [self.app.anim_trigger, self.app.fast_anim_trigger][self.speed_up]
-        moved = False
-        if trigger:
-            self.check_full_lines()
-            self.tetromino.update()
-            moved = True
-        #if the trigger for the input window is on, let that happen
+        self.moved_down  = False
         if self.app.input_trigger:
             self.check_full_lines()
             self.passive_control(pg.key.get_pressed())
-            moved = True
-        if moved:
+        if trigger and not self.moved_down:
+            self.check_full_lines()
+            self.tetromino.update()
+            self.moved_down = True
+        #if the trigger for the input window is on, let that happen
+        if self.moved_down:
             self.check_tetromino_landing()
             self.get_score()
         self.sprite_group.update()
