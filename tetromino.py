@@ -69,22 +69,23 @@ class Tetromino:
         new_block_positions = [block.rotate(pivot_pos, counter_clockwise) for block in self.blocks]
         rotate_type = self.get_state(counter_clockwise)
         
-        if not self.is_collide(new_block_positions):
-            for i, block in enumerate(self.blocks):
-                block.pos = new_block_positions[i]
-        #SRS for later, still need to get refine it
-        # if self.shape == 'O' or self.shape == 'I':
-        #     if not self.is_collide(new_block_positions):
-        #         for i, block in enumerate(self.blocks):
-        #             block.pos = new_block_positions[i]
-        # else:
-        #     for test in STANDARD_CHECKS[rotate_type]:
-        #         new_block_positions = [block + test for block in new_block_positions]
-        #         if not self.is_collide(new_block_positions):
-        #             for i, block in enumerate(self.blocks):
-        #                 block.pos = new_block_positions[i]
-        #             self.rotation_state = rotate_type[1]
-        #             break
+        if self.shape == 'O' or self.shape == 'I':
+            if not self.is_collide(new_block_positions):
+                for i, block in enumerate(self.blocks):
+                    block.pos = new_block_positions[i]
+        else:
+            if not self.is_collide(new_block_positions):
+                for i, block in enumerate(self.blocks):
+                    block.pos = new_block_positions[i] 
+            else:
+                for test in STANDARD_CHECKS[rotate_type]:
+                    test_block_positions = [block + test for block in new_block_positions]
+                    if not self.is_collide(test_block_positions):
+                        new_block_positions = test_block_positions
+                        for i, block in enumerate(self.blocks):
+                            block.pos = new_block_positions[i]
+                        self.rotation_state = rotate_type[1]
+                        break
                     
                 
         
