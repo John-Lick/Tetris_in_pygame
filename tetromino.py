@@ -29,7 +29,7 @@ class Block(pg.sprite.Sprite):
         if counter_clockwise:
             rotated = translated.rotate(-90)
         else:
-            rotated = translated.rotate(90)
+            rotated = translated.rotate(90) 
         return rotated + pivot_pos
     #sets the position of the tetromino and checks if we're the one in the next window
     def set_rect_pos(self):
@@ -63,49 +63,41 @@ class Tetromino:
         self.freebie = True
         self.rotation_state = 0
         self.current = current
-    #rotate around pivot
-    def rotate(self, counter_clockwise = False):
-        pivot_pos = self.blocks[0].pos
-        new_block_positions = [block.rotate(pivot_pos, counter_clockwise) for block in self.blocks]
-        rotate_type = self.get_state(counter_clockwise)
-        
-        if self.shape == 'O' or self.shape == 'I':
-            if not self.is_collide(new_block_positions):
-                for i, block in enumerate(self.blocks):
-                    block.pos = new_block_positions[i]
-        else:
-            if not self.is_collide(new_block_positions):
-                for i, block in enumerate(self.blocks):
-                    block.pos = new_block_positions[i] 
-            else:
-                for test in STANDARD_CHECKS[rotate_type]:
-                    test_block_positions = [block + test for block in new_block_positions]
-                    if not self.is_collide(test_block_positions):
-                        new_block_positions = test_block_positions
-                        for i, block in enumerate(self.blocks):
-                            block.pos = new_block_positions[i]
-                        self.rotation_state = rotate_type[1]
-                        break
-                    
-                
-        
-    
-    def get_state(self, counter_clockwise):
-        new_state = self.rotation_state
+        self.state = 0
+    #Get rotation type given rotation direction
+    def get_rotate_type(self, counter_clockwise):
         if counter_clockwise:
-            new_state -= 1
+            new_state = self.state - 1
         else:
-            new_state += 1
-        
+            new_state = self.state + 1
         if new_state < 0:
             new_state = 3
         elif new_state > 3:
             new_state = 0
-            
-        return (self.rotation_state, new_state)            
-            
-            
-    
+        return (self.state, new_state)
+    #rotate around pivot
+    def rotate(self, counter_clockwise = False):
+        pivot_pos = self.blocks[0].pos
+        new_block_positions = [block.rotate(pivot_pos, counter_clockwise) for block in self.blocks]
+        rotate_type = self.get_rotate_type(counter_clockwise)
+        
+        if self.shape == 'I':
+            for test in I_KICK_DATA[rotate_type]:
+                test_positions = [positions + test for positions in new_block_positions]
+                if not self.is_collide(test_positions):
+                    print(test)
+                    for i, block in enumerate(self.blocks):
+                        block.pos = test_positions[i]
+                    self.state = rotate_type[1]
+                    break
+        else:
+            for test in DEFAULT_KICK_DATA[rotate_type]:
+                test_positions = [positions + test for positions in new_block_positions]
+                if not self.is_collide(test_positions):
+                    for i, block in enumerate(self.blocks):
+                        block.pos = test_positions[i]
+                    self.state = rotate_type[1]
+                    break
     #check for any collisions with any blocks in the array
     def is_collide(self, block_positions):
         return any(map(Block.is_collide, self.blocks, block_positions))
