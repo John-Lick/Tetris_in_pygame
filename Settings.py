@@ -1,6 +1,7 @@
 import pygame as pg
 import pygame.mixer as mixer
 from pygame.locals import *
+import shelve
 
 vec = pg.math.Vector2
 
@@ -54,7 +55,7 @@ BGC = (30, 30, 30)
 #initial position of the tetromino
 INIT_POS_OFFSET = vec(W // 2 - 1, 0)
 #position of the "next" tetrmonino
-NEXT_POS_OFFSET = vec(W * 1.2, H * 0.3)
+NEXT_POS_OFFSET = vec(W * 1.25, H * 0.3)
 #Key for movement directions
 MOVE_DIRECTIONS = {'left' : vec(-1, 0), 'right' : vec(1, 0), 'down' : vec(0, 1)}
 #Dictionary that defines tetromno shapes as a series of vectors stemming from a pivot point

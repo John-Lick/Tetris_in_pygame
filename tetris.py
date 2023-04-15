@@ -17,18 +17,29 @@ class Text:
         self.font_3.render_to(self.app.screen, (GAME_W * 0.75, GAME_H * 0.15),
                               text= 'next', fgcolor='white',
                               size= TILE * 1.2)
-        self.font_2.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.5),
+        self.font_2.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.4),
                               text= 'SCORE', fgcolor='white',
                               size= TILE * 1.45)
-        self.font_3.render_to(self.app.screen, (GAME_W * 0.685, GAME_H * 0.57),
+        self.font_3.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.47),
                               text= f'{self.app.tetris.score}', fgcolor='white',
                               size= TILE * 1.3)
-        self.font_2.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.7),
+        self.font_2.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.55),
                               text= 'LEVEL', fgcolor='white',
                               size= TILE * 1.45)
-        self.font_3.render_to(self.app.screen, (GAME_W * 0.802, GAME_H * 0.77),
+        self.font_3.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.62),
                               text= f'{self.app.tetris.level}', fgcolor='white',
                               size= TILE * 1.3)
+        self.font_2.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.7),
+                              text= 'HI-SCORE', fgcolor='white',
+                              size= TILE * 1.1)
+        if self.app.tetris.high_score > self.app.tetris.score:
+            self.font_3.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.77),
+                                  text= f'{self.app.tetris.high_score}', fgcolor='white',
+                                  size= TILE * 1.3)
+        else:
+            self.font_3.render_to(self.app.screen, (GAME_W * 0.7, GAME_H * 0.77),
+                                  text= f'{self.app.tetris.score}', fgcolor='white',
+                                  size= TILE * 1.3)
 #The Game itself
 class Tetris:
     def __init__(self, app) -> None:
@@ -52,6 +63,7 @@ class Tetris:
         self.score = 0
         self.full_lines = 0
         self.levelcounter = 0
+        self.init_high_score()
         # Sounds
         self.theme = mixer.Sound(THEME)
         self.line_clear = mixer.Sound(LINE_CLEAR)
@@ -64,6 +76,19 @@ class Tetris:
         self.theme.set_volume(0.5)
         
         self.song.play(self.theme, -1)
+        
+    def init_high_score(self):
+        self.score_data = shelve.open('data/score', writeback= True)
+        if not 'hi_score' in self.score_data:
+            self.score_data['hi_score'] = 0
+        self.high_score = self.score_data['hi_score'] 
+        self.score_data.close
+    
+    def check_hi_score(self):
+        self.score_data = shelve.open('data/score', writeback= True)
+        if self.score > self.high_score:
+            self.score_data['hi_score'] = self.score
+        self.score_data.close
     
     def get_score(self):
         #adds score to score variable
@@ -75,12 +100,12 @@ class Tetris:
             self.sfx.play(self.four_lines)
         elif self.full_lines > 0:
             self.sfx.play(self.line_clear)
+        self.leveled_up = False
+        self.check_hi_score()
         self.full_lines = 0
         #resets the full line counter for this game cycle
         
     def check_full_lines(self):
-        #initialized for later
-        self.leveled_up = False
         #row variable to be iterated from later
         row = H - 1
         # we start from the bottom and iterate backwards 
@@ -105,7 +130,7 @@ class Tetris:
                 self.full_lines += 1
                 #if we level up, level up and update the game speed
                 if self.level < 9:
-                    self.levelcounter += 1
+                    self.levelcounter += 5
                     if self.levelcounter >= 10:
                         self.leveled_up = True
                         self.level +=1

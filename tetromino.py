@@ -85,7 +85,6 @@ class Tetromino:
             for test in I_KICK_DATA[rotate_type]:
                 test_positions = [positions + test for positions in new_block_positions]
                 if not self.is_collide(test_positions):
-                    print(test)
                     for i, block in enumerate(self.blocks):
                         block.pos = test_positions[i]
                     self.state = rotate_type[1]
