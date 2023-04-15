@@ -130,7 +130,7 @@ class Tetris:
                 self.full_lines += 1
                 #if we level up, level up and update the game speed
                 if self.level < 9:
-                    self.levelcounter += 5
+                    self.levelcounter += 1
                     if self.levelcounter >= 10:
                         self.leveled_up = True
                         self.level +=1
