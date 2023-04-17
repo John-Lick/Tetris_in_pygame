@@ -77,10 +77,11 @@ class Tetromino:
         return (self.state, new_state)
     #rotate around pivot
     def rotate(self, counter_clockwise = False):
+        #sets the pivot pos to be the central blocks pivot position
         pivot_pos = self.blocks[0].pos
         new_block_positions = [block.rotate(pivot_pos, counter_clockwise) for block in self.blocks]
         rotate_type = self.get_rotate_type(counter_clockwise)
-        
+        # if the shape is an I shape run the I tests for it
         if self.shape == 'I':
             for test in I_KICK_DATA[rotate_type]:
                 test_positions = [positions + test for positions in new_block_positions]
@@ -90,8 +91,10 @@ class Tetromino:
                     self.state = rotate_type[1]
                     break
         else:
+            #Test the kick data using the current rotation state
             for test in DEFAULT_KICK_DATA[rotate_type]:
                 test_positions = [positions + test for positions in new_block_positions]
+                #if there's no collision update the piece position
                 if not self.is_collide(test_positions):
                     for i, block in enumerate(self.blocks):
                         block.pos = test_positions[i]

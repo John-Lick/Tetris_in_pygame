@@ -76,14 +76,15 @@ class Tetris:
         self.theme.set_volume(0.5)
         
         self.song.play(self.theme, -1)
-        
+    #initializes the high score at the start of game
     def init_high_score(self):
         self.score_data = shelve.open('data/score', writeback= True)
+        #if there is no high score present create the necessary files
         if not 'hi_score' in self.score_data:
             self.score_data['hi_score'] = 0
         self.high_score = self.score_data['hi_score'] 
         self.score_data.close
-    
+    #if the high score is greater
     def check_hi_score(self):
         self.score_data = shelve.open('data/score', writeback= True)
         if self.score > self.high_score:
