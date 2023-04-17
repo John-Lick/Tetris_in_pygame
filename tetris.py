@@ -86,10 +86,10 @@ class Tetris:
         self.score_data.close
     #if the high score is greater
     def check_hi_score(self):
-        self.score_data = shelve.open('data/score', writeback= True)
         if self.score > self.high_score:
+            self.score_data = shelve.open('data/score', writeback= True)
             self.score_data['hi_score'] = self.score
-        self.score_data.close
+            self.score_data.close
     
     def get_score(self):
         #adds score to score variable

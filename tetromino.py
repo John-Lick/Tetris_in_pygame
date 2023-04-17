@@ -77,6 +77,9 @@ class Tetromino:
         return (self.state, new_state)
     #rotate around pivot
     def rotate(self, counter_clockwise = False):
+        #O pieces don't rotate
+        if self.shape == 'O':
+            return
         #sets the pivot pos to be the central blocks pivot position
         pivot_pos = self.blocks[0].pos
         new_block_positions = [block.rotate(pivot_pos, counter_clockwise) for block in self.blocks]
